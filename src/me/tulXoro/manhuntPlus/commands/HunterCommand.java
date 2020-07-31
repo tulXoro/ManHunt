@@ -2,6 +2,7 @@ package me.tulXoro.manhuntPlus.commands;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -13,6 +14,8 @@ import me.tulXoro.manhuntPlus.ManHunt;
 public class HunterCommand implements CommandExecutor{
 	
 	ManHunt plugin;
+	ItemStack compass = new ItemStack(Material.COMPASS);
+	
 	
 	public HunterCommand(ManHunt plugin) {
 		this.plugin = plugin;

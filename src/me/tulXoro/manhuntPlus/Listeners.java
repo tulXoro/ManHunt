@@ -4,7 +4,9 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -14,6 +16,7 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -43,12 +46,45 @@ public class Listeners implements Listener {
 	    			distance = distanceSquared;
 	    			nearest = onlinePlayer;
 	    		} 
-	    	} 
+	    	}
 		    if(nearest == null) {
 		    	player.sendMessage(ChatColor.RED + "No players to track!");
 		        return;
 		    } 
-		    plugin.getCompassMeta().setLodestone(nearest.getLocation());
+	    	
+	    	// tests if is overworld
+	    	if(player.getWorld().getEnvironment() == World.Environment.NORMAL) {
+	    		plugin.getCompassMeta().setLodestoneTracked(false);
+	    		plugin.setCompassMeta(plugin.getCompassMeta());
+	    		
+		    	ItemStack temp = player.getInventory().getItemInMainHand();
+		    	CompassMeta tempData = (CompassMeta) temp.getItemMeta();
+		    	
+		    	if(tempData.isLodestoneTracked()) {
+		    		tempData.setLodestone(player.getLocation());
+		    		plugin.setCompassMeta(tempData);
+		    		player.getInventory().remove(temp);
+		    		player.getInventory().addItem(plugin.getCompass());
+		    	}
+
+	    		player.setCompassTarget(nearest.getLocation());
+	    	}else {
+	    		player.getInventory().remove(plugin.getCompass());
+	    		
+	    		Location lodestone = new Location(nearest.getWorld(), nearest.getLocation().getX(), 127, nearest.getLocation().getZ());
+	    		
+	    		lodestone.getBlock().setType(Material.LODESTONE);
+	    		
+	    		plugin.getCompassMeta().setLodestoneTracked(true);
+		    	plugin.getCompassMeta().setLodestone(lodestone);
+		    	plugin.setCompassMeta(plugin.getCompassMeta());
+		    	
+		    	ItemStack temp = player.getInventory().getItemInMainHand();
+		    	player.getInventory().remove(temp);
+			    
+			    player.getInventory().addItem(new ItemStack[] { plugin.getCompass() });
+	    	}
+	    	
 		    player.sendMessage(ChatColor.GREEN + "Compass is now pointing to " + nearest.getName() + ".");
 	    }
 	  }
@@ -78,7 +114,7 @@ public class Listeners implements Listener {
 		    		} 
 		    	} 
 		    	
-		        int cooldownTime = 60; // Get number of seconds from wherever you want
+		        int cooldownTime = 300; // Get number of seconds from wherever you want
 		        if(cooldowns.containsKey(player.getName())) {
 		            long secondsLeft = ((cooldowns.get(player.getName())/1000)+cooldownTime) - (System.currentTimeMillis()/1000);
 		            if(secondsLeft>0) {
@@ -98,11 +134,11 @@ public class Listeners implements Listener {
 			        return;
 			    }
 		        // Do Command Here
-			    PotionEffect potionEffect = new PotionEffect(PotionEffectType.GLOWING, 10, 1, false, false);
-			    PotionEffect potionEffect2 = new PotionEffect(PotionEffectType.GLOWING, 20, 1, false, false);
-			    nearest.addPotionEffect(potionEffect);
-			    nearest.sendMessage(String.format("%s%sYou have been revealed by %s", ChatColor.DARK_RED, ChatColor.BOLD, player.getName()));
-			    player.addPotionEffect(potionEffect2);
+			    PotionEffect potionEffect = new PotionEffect(PotionEffectType.GLOWING, 400, 1, false, false);
+			    PotionEffect potionEffect2 = new PotionEffect(PotionEffectType.GLOWING, 200, 1, false, false);
+			    nearest.addPotionEffect(potionEffect2);
+			    nearest.sendMessage(String.format("%s%sYou have been revealed!", ChatColor.DARK_RED, ChatColor.BOLD));
+			    player.addPotionEffect(potionEffect);
 			    player.sendMessage(String.format("%s%sA player has been revealed!", ChatColor.AQUA, ChatColor.BOLD));
 	    	} 
 	    	event.setCancelled(true);

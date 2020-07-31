@@ -35,7 +35,7 @@ public class ManHunt extends JavaPlugin implements CommandExecutor{
 		
 		// Sets compass as a lodestone compass
 		// allows Nether tracking
-	    compassMeta.setLodestoneTracked(true);
+	    //compassMeta.setLodestoneTracked(true);
 	    compassMeta.setDisplayName(String.format("%s%sTracking Compass", ChatColor.DARK_PURPLE, ChatColor.BOLD));
 	    compass.setItemMeta(compassMeta);
 	}
@@ -43,6 +43,11 @@ public class ManHunt extends JavaPlugin implements CommandExecutor{
 	// Setters
 	public void setWalls(boolean bool) {
 		this.walls = bool;
+	}
+	
+	public void setCompassMeta(CompassMeta data) { 
+		this.compassMeta = data;
+		compass.setItemMeta(this.compassMeta);
 	}
 	
 	// Getters
