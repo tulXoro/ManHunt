@@ -1,0 +1,10 @@
+name: ManHuntPlus
+version: 1.0
+author: tulXoro, georgenotfound
+main: me.tulXoro.manhuntPlus.ManHunt
+
+commands:
+  hunter:
+    description: Hunter commands.
+  cipher:
+    description: Cipher commands.
