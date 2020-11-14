@@ -70,14 +70,10 @@ public class Listeners implements Listener {
 	    		player.setCompassTarget(nearest.getLocation());
 	    	}else {
 	    		player.getInventory().removeItem(event.getItem());
-	    		// location representing the location of a player
-	    		// at the top of the nether
-	    		Location lodestone = new Location(nearest.getWorld(), nearest.getLocation().getX(), 126, nearest.getLocation().getZ());
+	    		// a block representing the location of a player
+	    		// at the bottom of the nether
+	    		Location lodestone = new Location(nearest.getWorld(), nearest.getLocation().getX(), 0, nearest.getLocation().getZ());
 	    		
-	    		// creates a lodestone at the top of the nether
-	    		// and bedrock underneath it
-	    		lodestone.getBlock().setType(Material.BEDROCK);
-	    		lodestone.setY(0);
 	    		lodestone.getBlock().setType(Material.LODESTONE);
 	    		
 	    		// makes the compass into a lodestone compass
@@ -138,7 +134,6 @@ public class Listeners implements Listener {
 			    	event.setCancelled(true);
 			        return;
 			    }
-		        // Do Command Here
 			    PotionEffect potionEffect = new PotionEffect(PotionEffectType.GLOWING, 400, 1, false, false);
 			    PotionEffect potionEffect2 = new PotionEffect(PotionEffectType.GLOWING, 200, 1, false, false);
 			    nearest.addPotionEffect(potionEffect2);

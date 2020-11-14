@@ -24,10 +24,10 @@ public class WallCommand implements CommandExecutor {
 		
 		if(args[0].equalsIgnoreCase("enable")) {
 			plugin.setWalls(true);
-			sender.sendMessage(ChatColor.GREEN + "Cipher have been enabled");
+			sender.sendMessage(ChatColor.GREEN + "Walls have been enabled");
 		}else if(args[0].equalsIgnoreCase("disable")) {
 			plugin.setWalls(true);
-			sender.sendMessage(ChatColor.GREEN + "Cipher have been disabled");
+			sender.sendMessage(ChatColor.GREEN + "Walls have been disabled");
 		}else {
 			sendInvalid(sender);
 		}
@@ -36,8 +36,8 @@ public class WallCommand implements CommandExecutor {
 	
 	private void sendInvalid(CommandSender sender) {
 		sender.sendMessage(ChatColor.RED + "Invalid usage. Please use:");
-		sender.sendMessage(ChatColor.RED + "/cipher enable");
-		sender.sendMessage(ChatColor.RED + "/cipher disable");
+		sender.sendMessage(ChatColor.RED + "/walls enable");
+		sender.sendMessage(ChatColor.RED + "/walls disable");
 	}
 
 }

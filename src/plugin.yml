@@ -11,3 +11,5 @@ commands:
     description: Wall commands.
   freeforall:
     description: Freeforall commands.
+  infiltration:
+    description: Infiltrator commands.  

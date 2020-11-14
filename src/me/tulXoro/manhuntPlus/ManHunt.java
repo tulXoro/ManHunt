@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -22,6 +23,7 @@ public class ManHunt extends JavaPlugin implements CommandExecutor{
 	
 	private boolean walls = false;
 	private PluginModes mode = PluginModes.Idle;
+	private Player infiltrator;
 	
 	private CompassMeta compassMeta = (CompassMeta) compass.getItemMeta();
 	
@@ -58,6 +60,10 @@ public class ManHunt extends JavaPlugin implements CommandExecutor{
 		this.mode = mode;
 	}
 	
+	public void setInfiltrator(Player infiltrator) {
+		this.infiltrator = infiltrator;
+	}
+	
 	// Getters
 	public Set<UUID> getHunters() {
 		return this.hunters;
@@ -77,5 +83,9 @@ public class ManHunt extends JavaPlugin implements CommandExecutor{
 	
 	public PluginModes getPluginMode() { 
 		return this.mode;
+	}
+	
+	public Player getInfiltrator() {
+		return this.infiltrator;
 	}
 }
