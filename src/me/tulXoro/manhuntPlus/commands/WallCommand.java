@@ -12,7 +12,7 @@ public class WallCommand implements CommandExecutor {
 	
 	public WallCommand(ManHunt plugin) {
 		this.plugin = plugin;
-		plugin.getCommand("cipher").setExecutor(this);
+		plugin.getCommand("walls").setExecutor(this);
 	}
 
 	@Override

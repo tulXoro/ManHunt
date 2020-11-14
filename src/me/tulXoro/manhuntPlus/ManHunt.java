@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.tulXoro.manhuntPlus.commands.FreeForAllCommand;
 import me.tulXoro.manhuntPlus.commands.HunterCommand;
 import me.tulXoro.manhuntPlus.commands.WallCommand;
 import net.md_5.bungee.api.ChatColor;
@@ -20,6 +21,7 @@ public class ManHunt extends JavaPlugin implements CommandExecutor{
 	private ItemStack compass = new ItemStack(Material.COMPASS);
 	
 	private boolean walls = false;
+	private PluginModes mode = PluginModes.Idle;
 	
 	private CompassMeta compassMeta = (CompassMeta) compass.getItemMeta();
 	
@@ -30,7 +32,9 @@ public class ManHunt extends JavaPlugin implements CommandExecutor{
 		// Enables Commands
 		new HunterCommand(this);
 		new WallCommand(this);
+		new FreeForAllCommand(this);
 		
+		// list of hunters
 		this.hunters = new HashSet<>();
 		
 		// Sets compass as a lodestone compass
@@ -50,6 +54,10 @@ public class ManHunt extends JavaPlugin implements CommandExecutor{
 		compass.setItemMeta(this.compassMeta);
 	}
 	
+	public void setPluginMode(PluginModes mode) {
+		this.mode = mode;
+	}
+	
 	// Getters
 	public Set<UUID> getHunters() {
 		return this.hunters;
@@ -65,6 +73,9 @@ public class ManHunt extends JavaPlugin implements CommandExecutor{
 	
 	public boolean getWalls() {
 		return this.walls;
-		
+	}
+	
+	public PluginModes getPluginMode() { 
+		return this.mode;
 	}
 }

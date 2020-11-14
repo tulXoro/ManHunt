@@ -1,10 +1,13 @@
 name: ManHuntPlus
 version: 1.0
-author: tulXoro, georgenotfound
+author: tulXoro
 main: me.tulXoro.manhuntPlus.ManHunt
+api-version: 1.13
 
 commands:
   hunter:
     description: Hunter commands.
-  cipher:
-    description: Cipher commands.
+  walls:
+    description: Wall commands.
+  freeforall:
+    description: Freeforall commands.

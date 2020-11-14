@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -21,7 +22,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 public class Listeners implements Listener {
-	public HashMap<String, Long> cooldowns = new HashMap<String, Long>();
+	private HashMap<String, Long> cooldowns = new HashMap<String, Long>();
 	
 	private ManHunt plugin;
 	
@@ -33,13 +34,16 @@ public class Listeners implements Listener {
     public void onPlayerInteractEvent(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
 		
+		// Basically checks if a hunter has a compass and right clicks it
 	    if(plugin.getHunters().contains(player.getUniqueId()) && event.hasItem() && event.getItem().getType() == Material.COMPASS && (event.getAction() == Action.RIGHT_CLICK_BLOCK || event.getAction() == Action.RIGHT_CLICK_AIR)) {
+	    	// An algorithm which finds the nearest non-hunter player
 	    	Player nearest = null;
 	    	
 	    	double distance = Double.MAX_VALUE;
 	    
 	    	for(Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-	    		if(onlinePlayer.equals(player) || !onlinePlayer.getWorld().equals(player.getWorld()) || plugin.getHunters().contains(onlinePlayer.getUniqueId()))
+	    		if(onlinePlayer.equals(player) || !onlinePlayer.getWorld().equals(player.getWorld()) || plugin.getHunters().contains(onlinePlayer.getUniqueId())
+	    					|| plugin.getPluginMode() == PluginModes.FreeForAll)
 	    			continue; 
 	    		double distanceSquared = onlinePlayer.getLocation().distanceSquared(player.getLocation());
 	    		if(distanceSquared < distance) {
@@ -47,6 +51,7 @@ public class Listeners implements Listener {
 	    			nearest = onlinePlayer;
 	    		} 
 	    	}
+	    	
 		    if(nearest == null) {
 		    	player.sendMessage(ChatColor.RED + "No players to track!");
 		        return;
@@ -54,35 +59,33 @@ public class Listeners implements Listener {
 	    	
 	    	// tests if is overworld
 	    	if(player.getWorld().getEnvironment() == World.Environment.NORMAL) {
-	    		plugin.getCompassMeta().setLodestoneTracked(false);
-	    		plugin.setCompassMeta(plugin.getCompassMeta());
-	    		
-		    	ItemStack temp = player.getInventory().getItemInMainHand();
-		    	CompassMeta tempData = (CompassMeta) temp.getItemMeta();
 		    	
-		    	if(tempData.isLodestoneTracked()) {
-		    		tempData.setLodestone(player.getLocation());
-		    		plugin.setCompassMeta(tempData);
-		    		player.getInventory().remove(temp);
-		    		player.getInventory().addItem(plugin.getCompass());
+		    	// Checks if compass is lodestone tracked (compass won't work
+		    	// in the overworld if the compass is lodestone tracked
+		    	if(((CompassMeta) event.getItem().getItemMeta()).hasLodestone()) {
+		    		player.getInventory().remove(event.getItem());
+		    		
+		    		player.getInventory().addItem(new ItemStack(Material.COMPASS));
 		    	}
-
 	    		player.setCompassTarget(nearest.getLocation());
 	    	}else {
-	    		player.getInventory().remove(plugin.getCompass());
+	    		player.getInventory().removeItem(event.getItem());
+	    		// location representing the location of a player
+	    		// at the top of the nether
+	    		Location lodestone = new Location(nearest.getWorld(), nearest.getLocation().getX(), 126, nearest.getLocation().getZ());
 	    		
-	    		Location lodestone = new Location(nearest.getWorld(), nearest.getLocation().getX(), 127, nearest.getLocation().getZ());
-	    		
+	    		// creates a lodestone at the top of the nether
+	    		// and bedrock underneath it
+	    		lodestone.getBlock().setType(Material.BEDROCK);
+	    		lodestone.setY(0);
 	    		lodestone.getBlock().setType(Material.LODESTONE);
 	    		
-	    		plugin.getCompassMeta().setLodestoneTracked(true);
+	    		// makes the compass into a lodestone compass
+	    		// tracking the lodestone created at the top of the nether
 		    	plugin.getCompassMeta().setLodestone(lodestone);
 		    	plugin.setCompassMeta(plugin.getCompassMeta());
-		    	
-		    	ItemStack temp = player.getInventory().getItemInMainHand();
-		    	player.getInventory().remove(temp);
 			    
-			    player.getInventory().addItem(new ItemStack[] { plugin.getCompass() });
+			    player.getInventory().addItem(plugin.getCompass());
 	    	}
 	    	
 		    player.sendMessage(ChatColor.GREEN + "Compass is now pointing to " + nearest.getName() + ".");
@@ -105,8 +108,10 @@ public class Listeners implements Listener {
 	    		double distance = Double.MAX_VALUE;
 	    		
 		    	for(Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-		    		if(onlinePlayer.equals(player) || !onlinePlayer.getWorld().equals(player.getWorld()) || plugin.getHunters().contains(onlinePlayer.getUniqueId()))
+		    		if(onlinePlayer.equals(player) || !onlinePlayer.getWorld().equals(player.getWorld()))
 		    			continue; 
+		    		if(plugin.getHunters().contains(onlinePlayer.getUniqueId()) && plugin.getPluginMode() != PluginModes.FreeForAll)
+		    			continue;
 		    		double distanceSquared = onlinePlayer.getLocation().distanceSquared(player.getLocation());
 		    		if(distanceSquared < distance) {
 		    			distance = distanceSquared;
@@ -148,7 +153,10 @@ public class Listeners implements Listener {
 	@EventHandler
 	public void onPlayerRespawnEvent(PlayerRespawnEvent event) {
 		Player player = event.getPlayer();
-	    if(plugin.getHunters().contains(player.getUniqueId()))
+	    if(plugin.getPluginMode() == PluginModes.FreeForAll) {
+	    	player.setGameMode(GameMode.SPECTATOR);
+	    	plugin.getHunters().remove(player.getUniqueId());
+	    } else if(plugin.getHunters().contains(player.getUniqueId()))
 	    	player.getInventory().addItem(new ItemStack[] { plugin.getCompass() }); 
 	}
 }
